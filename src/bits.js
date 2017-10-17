@@ -36,7 +36,7 @@ function setNumberInputValue( value ) {
     if (value !== numberInput.value) {
         numberInput.value = value;
     }
-    updateVisualizatoin();
+    updateVisualization();
 }
 
 
@@ -233,7 +233,7 @@ function updateMath( representation ) {
     }
 }
 
-function updateVisualizatoin() {
+function updateVisualization() {
     var number = getInputNumberValue();
     var representation = ieee754.toIEEE754Parsed( number );
 
@@ -289,7 +289,7 @@ document.body.addEventListener( "click", function( event ){
         target.classList.toggle("one");
 
         updateNumber();
-        updateVisualizatoin();
+        updateVisualization();
 
         hoverRelatedExponentHandler( event );
         hoverRelatedSignificandHandler( event );
@@ -375,4 +375,4 @@ dom.$(".toggle-details-button").addEventListener("click", function(){
 
 // GO!
 
-updateVisualizatoin();
+updateVisualization();
