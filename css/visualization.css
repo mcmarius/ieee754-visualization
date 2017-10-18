@@ -13,8 +13,8 @@ body {
 }
 
 .number-wrapper {
-    position: fixed;
-    padding: 0.5em 1em 0.7em;
+    position: absolute;
+    padding: 0.5em 0 0.7em;
     border-bottom: 1px dashed #AAA;
     background: rgba(255,255,255,0.9);
     top: 0;
