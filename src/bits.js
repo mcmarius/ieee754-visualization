@@ -334,7 +334,7 @@ document.body.addEventListener( "mouseout", hoverRelatedSignHandler, false );
 document.body.addEventListener( "click", function( event ){
     var target = event.target;
 
-    if (dom.matchesSelector(target, ".mrow > .mo")) {
+    if (dom.matchesSelector(target, ".mrow > .equals")) {
         target.parentNode.classList.toggle("nowrap");
     }
 
