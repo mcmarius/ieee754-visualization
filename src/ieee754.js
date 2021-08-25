@@ -1,3 +1,19 @@
+const {getFloat16, setFloat16} = require("../node_modules/@petamoriken/float16");
+
+// float16ToOctets( 123.456 ) -> [ 66, 246, 233, 121 ]
+function float16ToOctets(number) {
+    const buffer = new ArrayBuffer(2);
+    setFloat16(new DataView(buffer), 0, number, false);
+    return [].slice.call(new Uint8Array(buffer));
+}
+
+// octetsToFloat16( [ 66, 246, 233, 121 ] ) -> 123.456
+function octetsToFloat16(octets) {
+    const buffer = new ArrayBuffer(2);
+    new Uint8Array(buffer).set(octets);
+    return getFloat16(new DataView(buffer), 0, false);
+}
+
 // float32ToOctets( 123.456 ) -> [ 66, 246, 233, 121 ]
 function float32ToOctets(number) {
     const buffer = new ArrayBuffer(4);
@@ -44,40 +60,37 @@ function octetsToBinaryString(octets) {
     }).join("");
 }
 
-// function float32ToBinaryString( number ) {
-//     return octetsToBinaryString( float32ToOctets( number ) );
-// }
-
-function binaryStringToFloat32(string) {
-    // console.log(string);
-    return octetsToFloat32(string.match(/.{8}/g).map(binaryStringToInt));
-}
-
-// function float64ToBinaryString( number ) {
-//     return octetsToBinaryString( float64ToOctets( number ) );
-// }
-
-function binaryStringToFloat64(string) {
-    return octetsToFloat64(string.match(/.{8}/g).map(binaryStringToInt));
-}
 
 const fMap = {
+    fp16: {
+        eBits: 5,
+        sBits: 10,
+        eNorm: 15,
+        f2o: float16ToOctets,
+        o2f: octetsToFloat16
+    },
     fp32: {
         eBits: 8,
         sBits: 23,
         eNorm: 127,
-        convFunc: float32ToOctets
+        f2o: float32ToOctets,
+        o2f: octetsToFloat32
     },
     fp64: {
         eBits: 11,
         sBits: 52,
         eNorm: 1023,
-        convFunc: float64ToOctets
+        f2o: float64ToOctets,
+        o2f: octetsToFloat64
     }
 };
 
+function binaryStringToFloat(string, type) {
+    return fMap[type].o2f(string.match(/.{8}/g).map(binaryStringToInt));
+}
+
 function toIEEE754Parsed(v, fType) {
-    const string = octetsToBinaryString(fMap[fType].convFunc(v));
+    const string = octetsToBinaryString(fMap[fType].f2o(v));
     const parts = string.match(new RegExp(`^(.)(.{${fMap[fType].eBits}})(.{${fMap[fType].sBits}})$`));
     // sign{1} exponent{8/11} fraction{23/52}
 
@@ -106,16 +119,7 @@ function toIEEE754Parsed(v, fType) {
 }
 
 module.exports = {
-    // float64ToOctets: float64ToOctets,
-    // octetsToFloat64: octetsToFloat64,
-    // float32ToOctets: float32ToOctets,
-    // octetsToFloat32: octetsToFloat32,
     intToBinaryString: intToBinaryString,
-    // binaryStringToInt: binaryStringToInt,
-    // octetsToBinaryString: octetsToBinaryString,
-    // float32ToBinaryString: float32ToBinaryString,
-    binaryStringToFloat32: binaryStringToFloat32,
-    // float64ToBinaryString: float64ToBinaryString,
-    binaryStringToFloat64: binaryStringToFloat64,
+    binaryStringToFloat: binaryStringToFloat,
     toIEEE754Parsed: toIEEE754Parsed
 };

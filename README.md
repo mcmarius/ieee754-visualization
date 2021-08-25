@@ -1,6 +1,6 @@
-# IEEE 754 Double Precision Floating Point Visualization
+# IEEE 754 Floating Point Visualizations
 
-It's an interactive visualization of how double precision floating point representation works.
+It's an interactive visualization of how floating point representations work.
 
 As presented during
 my [Everything you never wanted to know about JavaScript numbers](http://2013.jsconf.eu/speakers/bartek-szopka-everything-you-never-wanted-to-know-about-javascript-numbers-and-you-didnt-know-you-could-ask.html)
@@ -10,10 +10,13 @@ Original version available at http://bartaz.github.io/ieee754-visualization/
 
 ## Note from this fork (mcmarius)
 
-This fork combines contributions from two forks. The plan is to also add visualization for half precision floating
-point.
+This fork combines contributions from two forks and adds visualization for half precision floating point numbers.
 
-## Note from [this fork](https://github.com/nebgnahz/ieee754-visualization)
+This version is available at https://mcmarius.github.io/ieee754-visualization/
+
+There are some minor glitches yet to be solved.
+
+## Note from [another fork](https://github.com/nebgnahz/ieee754-visualization)
 
 This repository has been modified to visualize single precision floating point. For details, please
 see [the original repository](https://github.com/bartaz/ieee754-visualization). Changes are ugly hacks, and they are not
@@ -60,7 +63,9 @@ Creating this visualization would be much harder without great tools such as:
 
 * [webmake](https://github.com/medikoo/modules-webmake/) by Mariusz Nowak
 * [CSS MathML fallback](http://lea.verou.me/2013/03/use-mathml-today-with-css-fallback/) by Lea Verou
-* [Tangle](http://worrydream.com/Tangle/) by Bret Victor and his great work on [explorable explanations](http://worrydream.com/ExplorableExplanations/)
+* [Tangle](http://worrydream.com/Tangle/) by Bret Victor and his great work
+  on [explorable explanations](http://worrydream.com/ExplorableExplanations/)
+* [float16](https://github.com/petamoriken/float16/) by Kenta Moriuchi
 
 ## License
 
