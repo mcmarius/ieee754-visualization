@@ -3,28 +3,28 @@ module.exports = function ( target, getCurrentValue, callback ) {
 
     target.classList.add("dynks-enabled");
 
-    var options = {
+    const options = {
         gap: target.dataset.dynksGap || 5,
-        min: !isNaN(target.dataset.dynksMin) ? +target.dataset.dynksMin : -Infinity,
-        max: !isNaN(target.dataset.dynksMax) ? +target.dataset.dynksMax : +Infinity
+        min: !isNaN(parseInt(target.dataset.dynksMin)) ? +target.dataset.dynksMin : -Infinity,
+        max: !isNaN(parseInt(target.dataset.dynksMax)) ? +target.dataset.dynksMax : +Infinity
     };
 
-    target.addEventListener( "mousedown", function( mouseDownEvent ){
-        var initialPosition = mouseDownEvent.pageX;
-        var lastValue = Number( getCurrentValue() );
-        var lastSlot = 0;
+    target.addEventListener("mousedown", function (mouseDownEvent) {
+        const initialPosition = mouseDownEvent.pageX;
+        let lastValue = Number(getCurrentValue());
+        let lastSlot = 0;
 
-        function handleMouseMove( mouseMoveEvent ) {
-            var currentSlot = (mouseMoveEvent.pageX - initialPosition) / options.gap;
+        function handleMouseMove(mouseMoveEvent) {
+            let currentSlot = (mouseMoveEvent.pageX - initialPosition) / options.gap;
             currentSlot = ~~currentSlot;
 
-            var slotDiff = currentSlot - lastSlot;
+            const slotDiff = currentSlot - lastSlot;
 
             if (slotDiff !== 0) {
-                var multiplier = 1;
+                let multiplier = 1;
                 if (mouseMoveEvent.shiftKey) multiplier = 10;
 
-                var currentValue = lastValue + slotDiff * multiplier;
+                let currentValue = lastValue + slotDiff * multiplier;
 
                 if (currentValue < options.min) {
                     currentValue = options.min;
@@ -38,7 +38,7 @@ module.exports = function ( target, getCurrentValue, callback ) {
 
                 callback( currentValue );
 
-                if (lastValue != currentValue) {
+                if (lastValue !== currentValue) {
                     lastValue = currentValue;
                     lastSlot = currentSlot;
                 }
@@ -65,4 +65,3 @@ module.exports = function ( target, getCurrentValue, callback ) {
     }, false );
 
 };
-

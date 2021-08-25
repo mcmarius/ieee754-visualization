@@ -1,20 +1,19 @@
 // Dependencies:
-var createServer = require('http').createServer;
-var staticServer = require('node-static').Server;
-var webmake      = require('webmake');
+const createServer = require('http').createServer;
+const nodeStaticServer = require('node-static').Server;
+const webmake = require('webmake');
 
 
 // Project path:
-var projectPath  = __dirname;
 // Public folder path (statics)
-var staticsPath  = projectPath;
+const staticsPath = __dirname;
 
 // Server port:
-var port = 8000;
+const port = 8000;
 
-staticServer = new staticServer(staticsPath);
+const staticServer = new nodeStaticServer(staticsPath);
 
-var bundles = {
+const bundles = {
 	'/js/all.js': __dirname + '/src/bits.js'
 };
 
@@ -26,7 +25,7 @@ createServer(function (req, res) {
 	req.on('end', function () {
 		if ( bundles[req.url] ) {
 			// Generate bundle with Webmake
-			var programPath = bundles[ req.url ];
+			// let programPath = bundles[req.url];
 			// Send headers
 			res.writeHead(200, {
 				'Content-Type': 'application/javascript; charset=utf-8',
@@ -34,8 +33,8 @@ createServer(function (req, res) {
 				'Cache-Control': 'no-cache'
 			});
 
-			var time = Date.now();
-			webmake(bundles[req.url], { cache: true }, function (err, content) {
+			const time = Date.now();
+			webmake(bundles[req.url], {cache: true}, function (err, content) {
 				if (err) {
 					console.error("Webmake error: " + err.message);
 					res.end('console.error("Webmake error: ' + err.message + '");');
@@ -43,7 +42,7 @@ createServer(function (req, res) {
 				}
 
 				// Send script
-				console.log("Webmake OK (" + ((Date.now() - time)/1000).toFixed(3) + "s)");
+				console.log("Webmake OK (" + ((Date.now() - time) / 1000).toFixed(3) + "s)");
 				res.end(content);
 			});
 		} else {

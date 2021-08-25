@@ -37,8 +37,8 @@
 }
 
 .one {
-    background-color: rgba(100,100,100,.6);
-    background-position: 0px 0px;
+    background-color: rgba(100, 100, 100, .6);
+    background-position: 0 0;
 }
 
 .zero.sign {
@@ -121,6 +121,7 @@
 .bits-wrapper {
     display: block;
     margin-bottom: 20px;
+    margin-top: 20px;
     position: absolute;
 }
 
@@ -131,7 +132,7 @@
 }
 
 .bits {
-    margin-top: 0px;
+    margin-top: 0;
     height: 50px;
 }
 
@@ -161,7 +162,7 @@
     margin-bottom: 0.2em;
     display: block;
     text-align: center;
-    border: 1px solid transparent;
+    border: solid transparent;
     border-width: 0 0 2px;
 }
 
@@ -174,11 +175,13 @@
 }
 
 .exponent-wrapper .bits-wrapper-title {
+    /*width: 120px;  !* 165px; *!*/
     width: 165px;
 }
 
 .significand-wrapper .bits-wrapper-title,
 .significand-wrapper .math {
+    /*width: 345px;  !* 780px; *!*/
     width: 780px;
 }
 
@@ -188,6 +191,7 @@
     top: 50px;
     opacity: 0;
     pointer-events: none;
+    /*width: 345px;  !* 780px;  *!*/
     width: 780px;
 }
 
@@ -210,4 +214,13 @@ label[for=point-slider]::after {
     height: 8px;
     display: inline-block;
     border-radius: 5px;
+}
+
+.fp16 {
+}
+
+.fp32 {
+}
+
+.fp64 {
 }

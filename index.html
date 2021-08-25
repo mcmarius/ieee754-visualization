@@ -1,20 +1,24 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>IEEE-754 Floating Point representation explained</title>
 
-    <link rel="stylesheet" href="./css/math.css" />
-    <link rel="stylesheet" href="./css/bits.css" />
-    <link rel="stylesheet" href="./css/dynks.css" />
-    <link rel="stylesheet" href="./css/visualization.css" />
+    <link href="./css/math.css" rel="stylesheet"/>
+    <link href="./css/bits.css" rel="stylesheet"/>
+    <link href="./css/dynks.css" rel="stylesheet"/>
+    <link href="./css/visualization.css" rel="stylesheet"/>
 </head>
 
 <body>
 
 <div class="number-wrapper math">
-    <input id="number-input" class="number-input" value="1234.5678" />
-
+    <label for="number-input"></label><input class="number-input" id="number-input" value="1234.5678"/>
+    <label for="fp-type">FP type: </label><select id="fp-type">
+    <option disabled value="fp16">16 bit</option>
+    <option value="fp32">32 bit</option>
+    <option selected value="fp64">64 bit</option>
+</select>
     <button class="toggle-details-button">toggle details</button>
 </div>
 
@@ -24,10 +28,10 @@
         <div class="bits-wrapper sign-wrapper">
             <em class="bits-wrapper-title"><span class="sign-title">sign</span>&nbsp;</em>
             <div class="bits">
-                <span class="bit sign"></span>
+                <span class="bit sign fp16 fp32 fp64"></span>
             </div>
 
-            <div class="math" >
+            <div class="math">
 
                 <span class="mrow">
                     <span class="mi">s</span>
@@ -47,20 +51,20 @@
         <div class="bits-wrapper exponent-wrapper">
             <em class="bits-wrapper-title">exponent</em>
             <div class="bits">
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
-                <span class="bit exponent"></span>
+                <span class="bit exponent fp64"></span>
+                <span class="bit exponent fp64"></span>
+                <span class="bit exponent fp64"></span>
+                <span class="bit exponent fp32 fp64"></span>
+                <span class="bit exponent fp32 fp64"></span>
+                <span class="bit exponent fp32 fp64"></span>
+                <span class="bit exponent fp16 fp32 fp64"></span>
+                <span class="bit exponent fp16 fp32 fp64"></span>
+                <span class="bit exponent fp16 fp32 fp64"></span>
+                <span class="bit exponent fp16 fp32 fp64"></span>
+                <span class="bit exponent fp16 fp32 fp64"></span>
             </div>
 
-            <div class="math" >
+            <div class="math">
 
                 <span class="mrow">
                     <span class="mi">e</span>
@@ -77,7 +81,8 @@
                 <span class="mrow indented">
                     <span class="mi">e</span>
                     <span class="mo equals">=</span>
-                    <span class="mn" data-ieee754-value="exponent" id="exponent-dynks" data-dynks-min="0" data-dynks-max="2047" data-dynks-gap="2"></span>
+                    <span class="mn" data-dynks-gap="2" data-dynks-max="2047" data-dynks-min="0"
+                          data-ieee754-value="exponent" id="exponent-dynks"></span>
                 </span>
 
                 <span class="mrow">
@@ -85,12 +90,13 @@
                     <span class="mo equals">=</span>
                     <span class="mi">e</span>
                     <span class="mo">&minus;</span>
-                    <span class="mn">1023</span>
+                    <span class="mn" data-ieee754-value="expNormPosValue"></span>
                 </span>
                 <span class="mrow indented">
                     <span class="mi">p</span>
                     <span class="mo equals">=</span>
-                    <span class="mn" data-ieee754-value="exponentNormalized" id="exponent-normalized-dynks" data-dynks-min="-1023" data-dynks-max="1024" data-dynks-gap="2"></span>
+                    <span class="mn" data-dynks-gap="2" data-ieee754-value="exponentNormalized"
+                          id="exponent-normalized-dynks"></span>
                 </span>
 
             </div>
@@ -98,71 +104,71 @@
         <div class="bits-wrapper significand-wrapper">
             <em class="bits-wrapper-title">significand</em>
             <div class="bits">
-                <span class="bit hidden"></span>
+                <span class="bit hidden fp16 fp32 fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
+                <span class="bit significand fp16 fp32 fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp32 fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
 
-                <span class="bit significand"></span>
-                <span class="bit significand"></span>
+                <span class="bit significand fp64"></span>
+                <span class="bit significand fp64"></span>
 
                 <label for="point-slider" id="point-slider-label"></label>
-                <input id="point-slider" class="point-slider" type="range" min="0" max="2047" step="1" />
+                <input class="point-slider" id="point-slider" max="2047" min="0" step="1" type="range"/>
             </div>
 
-            <div class="math" >
+            <div class="math">
                 <span class="mrow">
                     <span class="mi">n</span>
                     <span class="mo equals">=</span>
@@ -197,7 +203,6 @@
         </div>
 
         <div class="full-equation math">
-
             <span class="mrow nowrap">
                 <!-- Equation -->
                 <span class="mi">n</span>
@@ -207,16 +212,21 @@
                 </span>
                 <span class="mo">&times;</span>
                 <span class="msup">
-                    <span class="mn">2</span><span><span class="mi exponent-bit-any">e</span><span class="mo"> - </span><span class="mn">1023</span></span>
+                    <span class="mn">2</span>
+                    <span>
+                        <span class="mi exponent-bit-any">e</span>
+                        <span class="mo"> - </span>
+                        <span class="mn" data-ieee754-value="expNormPosValue"></span>
+                    </span>
                 </span>
                 <span class="mo">&times;</span>
                 (
                 <span class="mn" data-ieee754-value="bHidden"></span>
                 <span class="mo">+</span>
                 <span class="significand-bit-any significand-sum">
-                    <span class="msum" data-from="i = 1" data-to="52">&sum;</span>
+                    <span class="msum" data-from="i = 1">&sum;</span>
                     <span class="msub">
-                        <span class="mi">b</span><span class="mi">52<span class="mo">-</span>i</span>
+                        <span class="mi">b</span><span class="mi"><span id="msub-text"></span><span class="mo">-</span>i</span>
                     </span>
                     <span class="msup">
                         <span class="mn">2</span><span class="mi">-i</span>
@@ -234,12 +244,20 @@
                 </span>
                 <span class="mo">&times;</span>
                 <span class="msup">
-                    <span class="mn">2</span><span><span class="mn exponent-bit-any" data-ieee754-value="exponentZero"></span><span class="mo"> - </span><span class="mn">1023</span></span>
+                    <span class="mn">2</span>
+                    <span>
+                        <span class="mn exponent-bit-any"
+                              data-ieee754-value="exponentZero">
+                        </span>
+                        <span class="mo">&minus;</span>
+                        <span class="mn" data-ieee754-value="expNormPosValue"></span>
+                    </span>
+
                 </span>
                 <span class="mo">&times;</span>
                 (<span data-ieee754-value="significandPowersNormalizedOne"></span>)
             </span>
-            
+
             <span class="mrow indented nowrap">
                 <!-- Normalized exponent with significand -->
                 <span class="mi">n</span>
@@ -249,7 +267,8 @@
                 </span>
                 <span class="mo">&times;</span>
                 <span class="msup">
-                    <span class="mn">2</span><span class="mn exponent-bit-any" data-ieee754-value="exponentNormalizedZero"></span>
+                    <span class="mn">2</span><span class="mn exponent-bit-any"
+                                                   data-ieee754-value="exponentNormalizedZero"></span>
                 </span>
                 <span class="mo">&times;</span>
                 (<span data-ieee754-value="significandPowersNormalized"></span>)
@@ -263,7 +282,7 @@
                 <span class="mo">&times;</span>
                 (<span data-ieee754-value="significandPowers"></span>)
             </span>
-            
+
             <span class="mrow indented">
                 <!-- Final value -->
                 <span class="mi">n</span>

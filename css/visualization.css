@@ -48,9 +48,8 @@ body {
     height: 22px;
     font-size: 0.4em;
     left: 0;
-    bottom: 0px;
+    bottom: 0;
     line-height: 15px;
-    width: 100%;
     cursor: pointer;
     color: #777;
 }
@@ -82,14 +81,29 @@ body {
     transition: 300ms 100ms opacity;
 }
 
-.visualization-bits .significand-wrapper .hidden { visibility: hidden; }
-.visualization-bits.expanded .significand-wrapper .hidden { visibility: visible; }
+.visualization-bits .significand-wrapper .hidden {
+    visibility: hidden;
+}
 
-.visualization-bits .significand-wrapper { top: 0px; }
-.visualization-bits.expanded .significand-wrapper { top: 570px; }
+.visualization-bits.expanded .significand-wrapper .hidden {
+    visibility: visible;
+}
 
-.visualization-bits .exponent-wrapper { top: 0px; }
-.visualization-bits.expanded .exponent-wrapper { top: 220px; }
+.visualization-bits .significand-wrapper {
+    top: 0;
+}
+
+.visualization-bits.expanded .significand-wrapper {
+    top: 570px;
+}
+
+.visualization-bits .exponent-wrapper {
+    top: 0;
+}
+
+.visualization-bits.expanded .exponent-wrapper {
+    top: 220px;
+}
 
 
 .visualization-bits .full-equation {
