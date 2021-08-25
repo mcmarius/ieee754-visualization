@@ -1854,11 +1854,12 @@
 				// EVENT HANDLERS
 
 				fpType.addEventListener('change', function () {
-				    dom.$$('.fp16').forEach(elem => elem.style.display = 'none')
-				    dom.$$('.fp32').forEach(elem => elem.style.display = 'none')
-				    dom.$$('.fp64').forEach(elem => elem.style.display = 'none')
-				    dom.$$('.' + this.value).forEach(elem => elem.style = '')
+				    dom.$$('.fp16').forEach(elem => elem.style.display = 'none');
+				    dom.$$('.fp32').forEach(elem => elem.style.display = 'none');
+				    dom.$$('.fp64').forEach(elem => elem.style.display = 'none');
+				    dom.$$('.' + this.value).forEach(elem => elem.style = '');
 				    updateVisualization();
+				    updateNumber();
 				});
 
 
