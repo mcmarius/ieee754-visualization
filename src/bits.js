@@ -1,30 +1,68 @@
-var ieee754 = require("./ieee754");
-var dom = require("./dom");
+const ieee754 = require("./ieee754");
+const dom = require("./dom");
 
-var visualization = dom.$(".visualization-bits");
-var numberInput = dom.$("#number-input");
+const visualization = dom.$(".visualization-bits");
+const numberInput = dom.$("#number-input");
+const fpType = dom.$("#fp-type");
 
-
-function classNameFilter( className ){
-    return function( bit ){ return bit.classList.contains(className); };
+const ftMap = {
+    fp32: {
+        expNormZero: -127,
+        expNormValue: 127,
+        expNormPosValue: 127,
+        expNormNegValue: -127,
+        dynksMin: -127,
+        dynksMax: 128,
+        exponentBits: 8,
+        significandBits: 23
+    },
+    fp64: {
+        expNormZero: -1023,
+        expNormValue: 1023,
+        expNormPosValue: 1023,
+        expNormNegValue: -1023,
+        dynksMin: -1023,
+        dynksMax: 1024,
+        exponentBits: 11,
+        significandBits: 52
+    }
 }
 
-var bits = dom.$$(".bit", visualization);
-var bitsSign = bits.filter( classNameFilter("sign") );
-var bitsExponent = bits.filter( classNameFilter("exponent") );
-var bitsHidden = bits.filter( classNameFilter("hidden") );
-var bitsSignificand = bits.filter( classNameFilter("significand") );
+function classNameFilter(className) {
+    return function (bit) {
+        return bit.classList.contains(className) && bit.classList.contains(fpType.value);
+    };
+}
 
-var pointSlider = dom.$("#point-slider");
-var pointSliderLabel = dom.$("#point-slider-label");
+//
+// function keepVisibleBits(bits ){
+//     return bits.map(bit => bit.classList.contains(fpType.value) || [].slice.call(bit.classList).every(x => x !== "fp32" && x !== "fp64"));
+// }
+
+const bits = dom.$$(".bit", visualization);
+
+function bitsSign() {
+    return bits.filter(classNameFilter("sign"));
+}
+
+function bitsExponent() {
+    return bits.filter(classNameFilter("exponent"));
+}
+
+function bitsSignificand() {
+    return bits.filter(classNameFilter("significand"));
+}
+
+const pointSlider = dom.$("#point-slider");
+const pointSliderLabel = dom.$("#point-slider-label");
 
 function getInputNumberValue() {
-    return Number( numberInput.value.replace(/\u2212/g, "-") );
+    return Number(numberInput.value.replace(/\u2212/g, "-"));
 }
 
-function setNumberInputValue( value ) {
-    value = Number( value );
-    if (value === 0 && (1/value < 0)) {
+function setNumberInputValue(value) {
+    value = Number(value);
+    if (value === 0 && (1 / value < 0)) {
         // special case to detect and show negative zero
         value = "-0";
     } else {
@@ -36,34 +74,36 @@ function setNumberInputValue( value ) {
     if (value !== numberInput.value) {
         numberInput.value = value;
     }
-    updateVisualizatoin();
+    updateVisualization();
 }
 
 
 function updateBitElementClasses( bitElements, bits, prevBit ) {
     prevBit = typeof prevBit == "string" ? prevBit.slice(-1) : "0";
-    for (var i = 0; i < bits.length; i++) {
-        var bitElement = bitElements[ i ];
+    // console.log("updateBitElementClasses: " + bits.length);
+    for (let i = 0; i < bits.length; i++) {
+        const bitElement = bitElements[i];
         bitElement.classList.remove("one");
         bitElement.classList.remove("zero");
         bitElement.classList.remove("prev-one");
         bitElement.classList.remove("prev-zero");
 
-        bitElement.classList.add(bits[i] == "1" ? "one" : "zero");
+        bitElement.classList.add(bits[i] === "1" ? "one" : "zero");
         if (i === 0) {
-            bitElement.classList.add(prevBit == "1" ? "prev-one" : "prev-zero");
+            bitElement.classList.add(prevBit === "1" ? "prev-one" : "prev-zero");
         }
     }
 }
 
 
 function updateBinary( parsed ) {
-    var isExpandedMode = visualization.classList.contains("expanded");
-
-    updateBitElementClasses( bitsSign, parsed.bSign );
-    updateBitElementClasses( bitsExponent, parsed.bExponent, isExpandedMode ? "0" : parsed.bSign );
-    updateBitElementClasses( bitsHidden, parsed.bHidden );
-    updateBitElementClasses( bitsSignificand, parsed.bSignificand, isExpandedMode ? parsed.bHidden : parsed.bExponent );
+    const isExpandedMode = visualization.classList.contains("expanded");
+    // console.log('parsed: ', parsed);
+    const bitsHidden = bits.filter(classNameFilter("hidden"));
+    updateBitElementClasses(bitsSign(), parsed.bSign);
+    updateBitElementClasses(bitsExponent(), parsed.bExponent, isExpandedMode ? "0" : parsed.bSign);
+    updateBitElementClasses(bitsHidden, parsed.bHidden);
+    updateBitElementClasses(bitsSignificand(), parsed.bSignificand, isExpandedMode ? parsed.bHidden : parsed.bExponent);
 
     pointSliderLabel.style.left = (parsed.exponentNormalized - 1) * 15 + "px";
 
@@ -79,30 +119,40 @@ function classNamesToBinaryString( binaryString, bitSpan ) {
 }
 
 function updateNumber( values ) {
-    var b = "";
+    let b = "";
 
-    var exponent, significand;
+    let exponent, significand;
+    // console.log("hm...", values);
     if (values) {
         exponent = values.exponent;
-        significand = values.significand;
+        // significand = values.significand;
     }
 
     if (typeof exponent == "number") {
-        exponent = ieee754.intToBinaryString( exponent, 11 );
+        exponent = ieee754.intToBinaryString(exponent, 11);
     } else {
-        exponent = bitsExponent.reduce( classNamesToBinaryString, "" );
+        exponent = bitsExponent().reduce(classNamesToBinaryString, "");
     }
-
+    // console.log('type: ', fpType.value);
+    // console.log('bits:', bits.filter(classNameFilter(fpType.value)));
+    // console.log('be: ' + bitsExponent().map(x => x.classList));
+    // console.log('bs: ' + bitsSignificand().map(x => x.classList));
     if (typeof significand != "string") {
-        significand = bitsSignificand.reduce( classNamesToBinaryString, "" );
+        significand = bitsSignificand().reduce(classNamesToBinaryString, "");
     }
+    // console.log('e: ', exponent);
+    // console.log('s: ', significand);
 
-    b += bitsSign.reduce( classNamesToBinaryString, "" );
+    b += bitsSign().reduce(classNamesToBinaryString, "");
     b += exponent;
     b += significand;
 
-    var f = ieee754.binaryStringToFloat64( b );
-    setNumberInputValue( f );
+    let f = "";
+    if (fpType.value === "fp32")
+        f = ieee754.binaryStringToFloat32(b);
+    else if (fpType.value === "fp64")
+        f = ieee754.binaryStringToFloat64(b);
+    setNumberInputValue(f);
 }
 
 
@@ -113,17 +163,17 @@ function generatePowersHtml( b, startPower, classPrefix, useOne ) {
 
     classPrefix = classPrefix || "exponent-bit-";
 
-    var htmlPowers = "";
-    var htmlComputed = "";
-    var htmlFractions = "";
-    var htmlFractionsComputed = "";
+    let htmlPowers = "";
+    let htmlComputed = "";
+    let htmlFractions = "";
+    let htmlFractionsComputed = "";
 
-    var allZeros = true;
-    for (var i = 0, l = b.length; i < l; i++) {
-        if (b[i] == "1") {
+    let allZeros = true;
+    for (let i = 0, l = b.length; i < l; i++) {
+        if (b[i] === "1") {
             allZeros = false;
-            var p = startPower - i;
-            var j = b.length - 1 -i;
+            const p = startPower - i;
+            const j = b.length - 1 - i;
             if (htmlPowers.length > 0) {
                 htmlPowers += "<span class='mo'> + </span>";
                 htmlComputed += "<span class='mo'> + </span>";
@@ -131,20 +181,20 @@ function generatePowersHtml( b, startPower, classPrefix, useOne ) {
                 htmlFractionsComputed += "<span class='mo'> + </span>";
             }
 
-            var powerHtml = '<span class="msup '+ (classPrefix + j) +'"><span class="mn">2</span><span class="mn">'+ p +'</span></span>';
+            let powerHtml = '<span class="msup ' + (classPrefix + j) + '"><span class="mn">2</span><span class="mn">' + p + '</span></span>';
 
-            if (useOne && p == 0) {
-                powerHtml = '<span class="mn '+ (classPrefix + j) +'">1</span>';
+            if (useOne && p === 0) {
+                powerHtml = '<span class="mn ' + (classPrefix + j) + '">1</span>';
             }
             htmlPowers += powerHtml;
-            htmlComputed += '<span class="mn '+ (classPrefix + j) +'">' + Math.pow(2,p)+ '</span>';
+            htmlComputed += '<span class="mn ' + (classPrefix + j) + '">' + Math.pow(2, p) + '</span>';
 
             if (p >= 0) {
                 htmlFractions += powerHtml;
-                htmlFractionsComputed += '<span class="mn '+ (classPrefix + j) +'">' + Math.pow(2,p)+ '</span>';
+                htmlFractionsComputed += '<span class="mn ' + (classPrefix + j) + '">' + Math.pow(2, p) + '</span>';
             } else {
-                htmlFractions += '<span class="mfrac '+ (classPrefix + j) +'"><span class="mn">1</span><span class="msup"><span class="mn">2</span><span class="mn">' + -p + '</span></span></span>';
-                htmlFractionsComputed += '<span class="mfrac '+ (classPrefix + j) +'"><span class="mn">1</span><span class="mn">'+ Math.pow(2,-p) +'</span></span>';
+                htmlFractions += '<span class="mfrac ' + (classPrefix + j) + '"><span class="mn">1</span><span class="msup"><span class="mn">2</span><span class="mn">' + -p + '</span></span></span>';
+                htmlFractionsComputed += '<span class="mfrac ' + (classPrefix + j) + '"><span class="mn">1</span><span class="mn">' + Math.pow(2, -p) + '</span></span>';
             }
         }
     }
@@ -166,12 +216,12 @@ function generatePowersHtml( b, startPower, classPrefix, useOne ) {
 function updateMath( representation ) {
     // enrich representation with powers HTML
 
-    var htmlExponent = generatePowersHtml( representation.bExponent );
+    const htmlExponent = generatePowersHtml(representation.bExponent);
 
     representation.exponentPowers = htmlExponent.powers;
     representation.exponentPowersComputed = htmlExponent.computed;
 
-    var significandBits = representation.bHidden + representation.bSignificand;
+    const significandBits = representation.bHidden + representation.bSignificand;
 
     representation.exponentZero = representation.exponent;
     representation.exponentNormalizedZero = representation.exponentNormalized;
@@ -182,26 +232,26 @@ function updateMath( representation ) {
     // which is one greater (i.e., as if it were encoded as a 1).
     //
     // -- http://en.wikipedia.org/wiki/Denormal_number
-
-    if (representation.exponentNormalizedZero == -1023) {
-
+    // console.log("aaa0: "+fpType.value);
+    if (representation.exponentNormalizedZero === ftMap[fpType.value].expNormZero) {
+        // console.log("aaaa: "+fpType.value);
         representation.exponentZero = representation.exponent + 1;
         representation.exponentNormalizedZero = representation.exponentNormalized + 1;
     }
 
-    var htmlSignificand = generatePowersHtml( significandBits, representation.exponentNormalizedZero, "significand-bit-" );
-    var htmlSignificandNormalized = generatePowersHtml( significandBits, 0, "significand-bit-" );
-    var htmlSignificandNormalizedOne = generatePowersHtml( significandBits, 0, "significand-bit-", true );
+    const htmlSignificand = generatePowersHtml(significandBits, representation.exponentNormalizedZero, "significand-bit-");
+    const htmlSignificandNormalized = generatePowersHtml(significandBits, 0, "significand-bit-");
+    const htmlSignificandNormalizedOne = generatePowersHtml(significandBits, 0, "significand-bit-", true);
 
     representation.significandPowersNormalized = htmlSignificandNormalized.powers;
     representation.significandPowersNormalizedOne = htmlSignificandNormalizedOne.powers;
 
-    var equation = dom.$(".full-equation");
+    const equation = dom.$(".full-equation");
 
     if (isNaN(representation.value)) {
         representation.significandPowers = representation.significandPowersFractions
-        = representation.significandPowersFractionsComputed = representation.significandPowersComputed
-        = '<span class="mn significand-bit-any">NaN</span>';
+            = representation.significandPowersFractionsComputed = representation.significandPowersComputed
+            = '<span class="mn significand-bit-any">NaN</span>';
     } else {
         representation.significandPowers = htmlSignificand.powers;
         representation.significandPowersFractions = htmlSignificand.fractions;
@@ -214,16 +264,22 @@ function updateMath( representation ) {
     else
         representation.signHtml = "+" + representation.sign;
 
-    representation.absValue = Math.abs( representation.value );
+    representation.absValue = Math.abs(representation.value);
 
     if (isNaN(representation.absValue)) {
         representation.absValue = "NaNNaNNaNNaN Batman!"
     }
 
-    var dynamic = dom.$$(".math [data-ieee754-value]");
+    representation.expNormPosValue = ftMap[fpType.value].expNormPosValue;
+    representation.expNormNegValue = ftMap[fpType.value].expNormNegValue;
 
-    dynamic.forEach( function(element){
-        element.innerHTML = representation[ element.dataset.ieee754Value ];
+    dom.$$(".msum").forEach(elem => elem.setAttribute('data-to', ftMap[fpType.value].significandBits));
+    dom.$("#msub-text").innerHTML = ftMap[fpType.value].significandBits;
+
+    const dynamic = dom.$$(".math [data-ieee754-value]");
+
+    dynamic.forEach(function (element) {
+        element.innerHTML = representation[element.dataset.ieee754Value];
     });
 
     if (isNaN(representation.value) || !isFinite(representation.value)) {
@@ -233,35 +289,44 @@ function updateMath( representation ) {
     }
 }
 
-function updateVisualizatoin() {
-    var number = getInputNumberValue();
-    var representation = ieee754.toIEEE754Parsed( number );
+function updateVisualization() {
+    const number = getInputNumberValue();
+    // console.log('upviz: ', number, fpType.value);
+    let representation = ieee754.toIEEE754Parsed(number, fpType.value);
 
-    updateBinary( representation );
-    updateMath( representation );
+    updateBinary(representation);
+    updateMath(representation);
 }
 
 
 // EVENT HANDLERS
 
-numberInput.addEventListener( "change", function() {
-    setNumberInputValue( getInputNumberValue() );
+fpType.addEventListener('change', function () {
+    dom.$$('.fp32').forEach(elem => elem.style.display = 'none')
+    dom.$$('.fp64').forEach(elem => elem.style.display = 'none')
+    dom.$$('.' + this.value).forEach(elem => elem.style = '')
+    updateVisualization();
+});
+
+
+numberInput.addEventListener("change", function () {
+    setNumberInputValue(getInputNumberValue());
 }, false);
 
 
-numberInput.addEventListener("keydown", function ( event ) {
-    var diff = 0;
-    if ( event.keyCode === 38 || event.keyCode === 40 ) {
+numberInput.addEventListener("keydown", function (event) {
+    let diff = 0;
+    if (event.keyCode === 38 || event.keyCode === 40) {
 
-            if ( event.keyCode === 38 ) diff = +1;
-            else diff = -1;
+        if (event.keyCode === 38) diff = +1;
+        else diff = -1;
 
-            if ( event.shiftKey ) {
+        if (event.shiftKey) {
+            diff *= 10;
+            if (event.altKey) {
                 diff *= 10;
-                if ( event.altKey ) {
-                    diff *= 10;
-                }
-            } else if ( event.altKey ) {
+            }
+        } else if (event.altKey) {
                 diff /= 10;
             }
 
@@ -273,7 +338,7 @@ numberInput.addEventListener("keydown", function ( event ) {
 
 
 pointSlider.addEventListener( "change", function() {
-    var exponent = Number(pointSlider.value);
+    const exponent = Number(pointSlider.value);
     updateNumber( { exponent: exponent } );
 }, false);
 
@@ -282,14 +347,14 @@ pointSlider.addEventListener( "click", function() {
 }, false);
 
 document.body.addEventListener( "click", function( event ){
-    var target = event.target;
+    const target = event.target;
 
     if (target.classList.contains("zero") || target.classList.contains("one")) {
         target.classList.toggle("zero");
         target.classList.toggle("one");
 
         updateNumber();
-        updateVisualizatoin();
+        updateVisualization();
 
         hoverRelatedExponentHandler( event );
         hoverRelatedSignificandHandler( event );
@@ -302,29 +367,29 @@ document.body.addEventListener( "click", function( event ){
 // toggle hover class on parts of equation related to hovered bit
 function createHoverRelatedHandler( selector, classPrefix ) {
     return function (event) {
-        var target = event.target;
+        const target = event.target;
         if (dom.matchesSelector( target, selector )) {
 
-            var siblings = dom.arrayify(target.parentNode.children).filter(classNameFilter("bit"));
-            var n = siblings.length - siblings.indexOf( target ) - 1;
+            const siblings = dom.arrayify(target.parentNode.children).filter(classNameFilter("bit"));
+            const n = siblings.length - siblings.indexOf(target) - 1;
 
-            var related = dom.$$((classPrefix+n)+","+(classPrefix+"any"));
-            related.forEach( function(r){
-                r.classList[ event.type == "mouseout" ? "remove" : "add"]("hover");
+            const related = dom.$$((classPrefix + n) + "," + (classPrefix + "any"));
+            related.forEach(function (r) {
+                r.classList[event.type === "mouseout" ? "remove" : "add"]("hover");
             });
         }
     };
 }
 
-var hoverRelatedExponentHandler = createHoverRelatedHandler( ".bit.exponent", ".exponent-bit-");
+const hoverRelatedExponentHandler = createHoverRelatedHandler(".bit.exponent", ".exponent-bit-");
 document.body.addEventListener( "mouseover", hoverRelatedExponentHandler, false );
 document.body.addEventListener( "mouseout", hoverRelatedExponentHandler, false );
 
-var hoverRelatedSignificandHandler = createHoverRelatedHandler( ".bit.significand, .bit.hidden", ".significand-bit-");
+const hoverRelatedSignificandHandler = createHoverRelatedHandler(".bit.significand, .bit.hidden", ".significand-bit-");
 document.body.addEventListener( "mouseover", hoverRelatedSignificandHandler, false );
 document.body.addEventListener( "mouseout", hoverRelatedSignificandHandler, false );
 
-var hoverRelatedSignHandler = createHoverRelatedHandler( ".bit.sign", ".sign-bit-");
+const hoverRelatedSignHandler = createHoverRelatedHandler(".bit.sign", ".sign-bit-");
 document.body.addEventListener( "mouseover", hoverRelatedSignHandler, false );
 document.body.addEventListener( "mouseout", hoverRelatedSignHandler, false );
 
@@ -332,9 +397,9 @@ document.body.addEventListener( "mouseout", hoverRelatedSignHandler, false );
 // toggle nowrap class on a equation row when equals sign is clicked
 
 document.body.addEventListener( "click", function( event ){
-    var target = event.target;
+    const target = event.target;
 
-    if (dom.matchesSelector(target, ".mrow > .mo")) {
+    if (dom.matchesSelector(target, ".mrow > .equals")) {
         target.parentNode.classList.toggle("nowrap");
     }
 
@@ -343,28 +408,31 @@ document.body.addEventListener( "click", function( event ){
 
 // make exponent value editable
 
-var dynks = require( "./dynks" );
+const dynks = require("./dynks");
 
-var exponentElement = dom.$("#exponent-dynks");
-var exponentNormalizedElement = dom.$("#exponent-normalized-dynks");
+const exponentElement = dom.$("#exponent-dynks");
+const exponentNormalizedElement = dom.$("#exponent-normalized-dynks");
 
 function getCurrentExponentValue() {
     return +exponentElement.innerHTML;
 }
 
-function updateExponentValue( value ) {
-    var exponent = Number(value);
-    updateNumber( { exponent: exponent } );
+function updateExponentValue(value) {
+    const exponent = Number(value);
+    updateNumber({exponent: exponent});
 }
-dynks( exponentElement, getCurrentExponentValue, updateExponentValue );
+
+dynks(exponentElement, getCurrentExponentValue, updateExponentValue);
 
 function getCurrentExponentNormalizedValue() {
+    exponentNormalizedElement.dataset.dynksMin = ftMap[fpType.value].dynksMin;
+    exponentNormalizedElement.dataset.dynksMax = ftMap[fpType.value].dynksMax;
     return +exponentNormalizedElement.innerHTML;
 }
 
-function updateExponentNormalizedValue( value ) {
-    var exponent = Number(value);
-    updateNumber( { exponent: exponent + 1023 } );
+function updateExponentNormalizedValue(value) {
+    const exponent = Number(value);
+    updateNumber({exponent: exponent + ftMap[fpType.value].expNormValue});
 }
 dynks( exponentNormalizedElement, getCurrentExponentNormalizedValue, updateExponentNormalizedValue );
 
@@ -375,4 +443,4 @@ dom.$(".toggle-details-button").addEventListener("click", function(){
 
 // GO!
 
-updateVisualizatoin();
+updateVisualization();

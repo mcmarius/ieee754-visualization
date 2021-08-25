@@ -13,8 +13,8 @@ body {
 }
 
 .number-wrapper {
-    position: fixed;
-    padding: 0.5em 1em 0.7em;
+    position: absolute;
+    padding: 0.5em 0 0.7em;
     border-bottom: 1px dashed #AAA;
     background: rgba(255,255,255,0.9);
     top: 0;
@@ -48,9 +48,8 @@ body {
     height: 22px;
     font-size: 0.4em;
     left: 0;
-    bottom: 0px;
+    bottom: 0;
     line-height: 15px;
-    width: 100%;
     cursor: pointer;
     color: #777;
 }
@@ -82,14 +81,29 @@ body {
     transition: 300ms 100ms opacity;
 }
 
-.visualization-bits .significand-wrapper .hidden { visibility: hidden; }
-.visualization-bits.expanded .significand-wrapper .hidden { visibility: visible; }
+.visualization-bits .significand-wrapper .hidden {
+    visibility: hidden;
+}
 
-.visualization-bits .significand-wrapper { top: 0px; }
-.visualization-bits.expanded .significand-wrapper { top: 570px; }
+.visualization-bits.expanded .significand-wrapper .hidden {
+    visibility: visible;
+}
 
-.visualization-bits .exponent-wrapper { top: 0px; }
-.visualization-bits.expanded .exponent-wrapper { top: 220px; }
+.visualization-bits .significand-wrapper {
+    top: 0;
+}
+
+.visualization-bits.expanded .significand-wrapper {
+    top: 570px;
+}
+
+.visualization-bits .exponent-wrapper {
+    top: 0;
+}
+
+.visualization-bits.expanded .exponent-wrapper {
+    top: 220px;
+}
 
 
 .visualization-bits .full-equation {
@@ -150,6 +164,7 @@ body {
 
 .hover {
     border-radius: 0.1em;
-    background: rgba(255, 255, 0, 0.2);
+    /* background: rgba(255, 255, 0, 0.2); */
+    background: lightgray;
     box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
 }

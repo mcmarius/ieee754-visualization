@@ -5,8 +5,8 @@
   "main": "server.js",
   "dependencies": {
     "node-static": "~0.7.0",
-    "webmake": "~0.3.20",
-    "uglify-js": "~2.4.1"
+    "uglify-js": "^3.14.1",
+    "webmake": "~0.3.20"
   },
   "devDependencies": {},
   "scripts": {
