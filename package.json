@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "@petamoriken/float16": "^3.4.0",
     "node-static": "~0.7.0",
     "uglify-js": "^3.14.1",
     "webmake": "~0.3.20"

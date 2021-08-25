@@ -5,7 +5,18 @@ const visualization = dom.$(".visualization-bits");
 const numberInput = dom.$("#number-input");
 const fpType = dom.$("#fp-type");
 
+
 const ftMap = {
+    fp16: {
+        expNormZero: -15,
+        expNormValue: 15,
+        expNormPosValue: 15,
+        expNormNegValue: -15,
+        dynksMin: -15,
+        dynksMax: 16,
+        exponentBits: 5,
+        significandBits: 10
+    },
     fp32: {
         expNormZero: -127,
         expNormValue: 127,
@@ -147,11 +158,7 @@ function updateNumber( values ) {
     b += exponent;
     b += significand;
 
-    let f = "";
-    if (fpType.value === "fp32")
-        f = ieee754.binaryStringToFloat32(b);
-    else if (fpType.value === "fp64")
-        f = ieee754.binaryStringToFloat64(b);
+    let f = ieee754.binaryStringToFloat(b, fpType.value);
     setNumberInputValue(f);
 }
 
@@ -302,6 +309,7 @@ function updateVisualization() {
 // EVENT HANDLERS
 
 fpType.addEventListener('change', function () {
+    dom.$$('.fp16').forEach(elem => elem.style.display = 'none')
     dom.$$('.fp32').forEach(elem => elem.style.display = 'none')
     dom.$$('.fp64').forEach(elem => elem.style.display = 'none')
     dom.$$('.' + this.value).forEach(elem => elem.style = '')
