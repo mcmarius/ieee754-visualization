@@ -320,6 +320,8 @@ fpType.addEventListener('change', function () {
 
 numberInput.addEventListener("change", function () {
     setNumberInputValue(getInputNumberValue());
+    updateVisualization();
+    updateNumber();
 }, false);
 
 
