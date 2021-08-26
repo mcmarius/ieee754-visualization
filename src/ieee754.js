@@ -1,4 +1,6 @@
 const {getFloat16, setFloat16} = require("../node_modules/@petamoriken/float16");
+const dom = require("./dom");
+const Fraction = require("fraction.js");
 
 // float16ToOctets( 123.456 ) -> [ 66, 246, 233, 121 ]
 function float16ToOctets(number) {
@@ -104,9 +106,23 @@ function toIEEE754Parsed(v, fType) {
     const bSignificand = parts[3];
 
     const bHidden = (exponent === 0) ? "0" : "1";
+    let exp2 = exponentNormalized;
+    if(exp2 === -fMap[fType].eNorm)
+        exp2 += 1;  // subnormal
+
+    const frac = dom
+        .arrayify(bSignificand)
+        .map((elem, i) => elem === "1" ? new Fraction(1, 2 ** (i + 1)) : null)  // significand
+        .filter(elem => elem !== null)
+        .reduce((prev, current) => prev.add(current), new Fraction(0))  // sum
+        .add(new Fraction(bHidden))  // hidden bit
+        .mul(new Fraction(2 ** exp2))
+        .mul(new Fraction(sign));
 
     return {
-        value: v,
+        raw_frac: frac,
+        frac: `${frac.toFraction()} &asymp; ${frac.toString()}`,
+        value: frac.toString(),
         bFull: bSign + bExponent + bHidden + bSignificand,
         bSign: bSign,
         bExponent: bExponent,

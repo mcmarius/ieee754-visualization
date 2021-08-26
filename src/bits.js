@@ -91,7 +91,6 @@ function setNumberInputValue(value) {
 
 function updateBitElementClasses( bitElements, bits, prevBit ) {
     prevBit = typeof prevBit == "string" ? prevBit.slice(-1) : "0";
-    // console.log("updateBitElementClasses: " + bits.length);
     for (let i = 0; i < bits.length; i++) {
         const bitElement = bitElements[i];
         bitElement.classList.remove("one");
@@ -109,7 +108,6 @@ function updateBitElementClasses( bitElements, bits, prevBit ) {
 
 function updateBinary( parsed ) {
     const isExpandedMode = visualization.classList.contains("expanded");
-    // console.log('parsed: ', parsed);
     const bitsHidden = bits.filter(classNameFilter("hidden"));
     updateBitElementClasses(bitsSign(), parsed.bSign);
     updateBitElementClasses(bitsExponent(), parsed.bExponent, isExpandedMode ? "0" : parsed.bSign);
@@ -133,7 +131,6 @@ function updateNumber( values ) {
     let b = "";
 
     let exponent, significand;
-    // console.log("hm...", values);
     if (values) {
         exponent = values.exponent;
         // significand = values.significand;
@@ -144,15 +141,9 @@ function updateNumber( values ) {
     } else {
         exponent = bitsExponent().reduce(classNamesToBinaryString, "");
     }
-    // console.log('type: ', fpType.value);
-    // console.log('bits:', bits.filter(classNameFilter(fpType.value)));
-    // console.log('be: ' + bitsExponent().map(x => x.classList));
-    // console.log('bs: ' + bitsSignificand().map(x => x.classList));
     if (typeof significand != "string") {
         significand = bitsSignificand().reduce(classNamesToBinaryString, "");
     }
-    // console.log('e: ', exponent);
-    // console.log('s: ', significand);
 
     b += bitsSign().reduce(classNamesToBinaryString, "");
     b += exponent;
@@ -239,9 +230,8 @@ function updateMath( representation ) {
     // which is one greater (i.e., as if it were encoded as a 1).
     //
     // -- http://en.wikipedia.org/wiki/Denormal_number
-    // console.log("aaa0: "+fpType.value);
+
     if (representation.exponentNormalizedZero === ftMap[fpType.value].expNormZero) {
-        // console.log("aaaa: "+fpType.value);
         representation.exponentZero = representation.exponent + 1;
         representation.exponentNormalizedZero = representation.exponentNormalized + 1;
     }
@@ -271,7 +261,7 @@ function updateMath( representation ) {
     else
         representation.signHtml = "+" + representation.sign;
 
-    representation.absValue = Math.abs(representation.value);
+    representation.absValue = representation.raw_frac.s === 1 ? representation.value : representation.value.slice(1);
 
     if (isNaN(representation.absValue)) {
         representation.absValue = "NaNNaNNaNNaN Batman!"
@@ -283,13 +273,16 @@ function updateMath( representation ) {
     dom.$$(".msum").forEach(elem => elem.setAttribute('data-to', ftMap[fpType.value].significandBits));
     dom.$("#msub-text").innerHTML = ftMap[fpType.value].significandBits;
 
+    const value = representation.value;
+    representation.value = representation.frac;
+
     const dynamic = dom.$$(".math [data-ieee754-value]");
 
     dynamic.forEach(function (element) {
         element.innerHTML = representation[element.dataset.ieee754Value];
     });
 
-    if (isNaN(representation.value) || !isFinite(representation.value)) {
+    if (isNaN(value) || !isFinite(value)) {
         equation.classList.add("collapsed");
     } else {
         equation.classList.remove("collapsed");
@@ -298,7 +291,6 @@ function updateMath( representation ) {
 
 function updateVisualization() {
     const number = getInputNumberValue();
-    // console.log('upviz: ', number, fpType.value);
     let representation = ieee754.toIEEE754Parsed(number, fpType.value);
 
     updateBinary(representation);
