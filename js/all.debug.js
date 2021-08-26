@@ -1865,6 +1865,8 @@
 
 				numberInput.addEventListener("change", function () {
 				    setNumberInputValue(getInputNumberValue());
+				    updateVisualization();
+				    updateNumber();
 				}, false);
 
 
