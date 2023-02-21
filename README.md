@@ -10,11 +10,11 @@ Original version available at http://bartaz.github.io/ieee754-visualization/
 
 ## Note from this fork (mcmarius)
 
-This fork combines contributions from two forks and adds visualization for half precision floating point numbers.
+This fork combines contributions from two forks, adds visualization for half precision floating point numbers and shows the rational representation.
 
 This version is available at https://mcmarius.github.io/ieee754-visualization/
 
-There are some minor glitches yet to be solved.
+There are some minor (known) glitches.
 
 ## Note from [another fork](https://github.com/nebgnahz/ieee754-visualization)
 
@@ -66,6 +66,7 @@ Creating this visualization would be much harder without great tools such as:
 * [Tangle](http://worrydream.com/Tangle/) by Bret Victor and his great work
   on [explorable explanations](http://worrydream.com/ExplorableExplanations/)
 * [float16](https://github.com/petamoriken/float16/) by Kenta Moriuchi
+* [Fraction.js](https://github.com/infusion/Fraction.js/) by Robert Eisele
 
 ## License
 
